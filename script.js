@@ -35,13 +35,20 @@ setButton.addEventListener("click", async (event, err) => {
     let value = document.getElementById("value-to-set").value;
     let deployedContractAddress = document.getElementById("deployed-contract-address").value;
     let blockWritten = document.getElementById("block-written");
-    try {
-        let blockInfo = await setValueAtAddress(host, accountAddress, value, deployedContractAbi, deployedContractAddress);
-        blockWritten.innerText = blockInfo.blockNumber;
-    }
-    catch(e) {
-        console.log(e);
-    }
+    setTimeout(async () => {
+        blockWritten.innerText = "Time Out";
+        blockWritten.classList.add("text-danger");
+    }, 20000);
+    
+        try {
+            // throw "Time out!";
+            let blockInfo = await setValueAtAddress(host, accountAddress, value, deployedContractAbi, deployedContractAddress);
+            blockWritten.classList.remove("text-danger");            
+            blockWritten.innerText = blockInfo.blockNumber;
+        }
+        catch (e) {
+            console.log(e);
+        }
 })
 
 async function updateBlockCount() {
@@ -64,6 +71,3 @@ function test() {
     const deployedContractAddress = "0xD72d53bE97280B55E94354913A4F86984b1D67Ae";
     getValueAtAddress(host, deployedContractAbi, deployedContractAddress).then(console.log);
 }
-
-
-
