@@ -1,5 +1,6 @@
 // Hardcoded ABI for now
 const deployedContractAbi = JSON.parse('[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"}]');
+const timeLimit = 20000;        // For set in block, unit milisecond
 
 // Functions copied from https://consensys.net/docs/goquorum/en/latest/tutorials/contracts/calling-contract-functions/
 async function getValueAtAddress(host, deployedContractAbi, deployedContractAddress){
@@ -23,38 +24,43 @@ const setButton = document.getElementById("set-button")
 
 getButton.addEventListener("click", async (event, err) => {
     event.preventDefault();
-    let host = document.getElementById("host").value;
-    let deployedContractAddress = document.getElementById("contract-to-get").value || document.getElementById("deployed-contract-address").value;
+    const host = document.getElementById("host").value;
+    const deployedContractAddress = document.getElementById("contract-to-get").value || document.getElementById("deployed-contract-address").value;
     document.getElementById("value-returned").innerText = await getValueAtAddress(host, deployedContractAbi, deployedContractAddress);
 })
 
 setButton.addEventListener("click", async (event, err) => {
     event.preventDefault();
-    let host = document.getElementById("host").value;
-    let accountAddress = document.getElementById("account-address").value;
-    let value = document.getElementById("value-to-set").value;
-    let deployedContractAddress = document.getElementById("deployed-contract-address").value;
-    let blockWritten = document.getElementById("block-written");
-    setTimeout(async () => {
-        blockWritten.innerText = "Time Out";
-        blockWritten.classList.add("text-danger");
-    }, 20000);
+    const host = document.getElementById("host").value;
+    const accountAddress = document.getElementById("account-address").value;
+    const value = document.getElementById("value-to-set").value;
+    const deployedContractAddress = document.getElementById("deployed-contract-address").value;
+    const blockWritten = document.getElementById("block-written");
+    let success = false;
+    blockWritten.innerText = "Running";
     
-        try {
-            // throw "Time out!";
-            let blockInfo = await setValueAtAddress(host, accountAddress, value, deployedContractAbi, deployedContractAddress);
-            blockWritten.classList.remove("text-danger");            
-            blockWritten.innerText = blockInfo.blockNumber;
+    setTimeout(async () => {
+        if (!success) {
+            blockWritten.innerText = "Time Out";
+            blockWritten.classList.add("text-danger");
         }
-        catch (e) {
-            console.log(e);
-        }
+    }, timeLimit);
+    
+    try {
+        const blockInfo = await setValueAtAddress(host, accountAddress, value, deployedContractAbi, deployedContractAddress);
+        blockWritten.classList.remove("text-danger");            
+        blockWritten.innerText = blockInfo.blockNumber;
+        success = true;
+    }
+    catch (e) {
+        console.log(e);
+    }
 })
 
 async function updateBlockCount() {
-    let host = document.getElementById("host").value;
+    const host = document.getElementById("host").value;
     const web3 = new Web3(host);
-    let blockCount = document.getElementById("block-count");
+    const blockCount = document.getElementById("block-count");
     try {
         blockCount.innerText = await web3.eth.getBlockNumber();
     }
