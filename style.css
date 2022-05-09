@@ -1,0 +1,35 @@
+h1 {
+    text-align: center;
+}
+
+span#value-returned, #block-written {
+    color: green;
+    font-weight: bold;
+}
+
+label {
+    font-weight: bold;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper {
+    display: grid;
+    grid: auto-flow / 1fr 1fr;
+}
+
+@media (max-width: 600px) {
+    .wrapper {
+        display: block;
+    }    
+}
+
+div .left, .right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #eee;
+}
