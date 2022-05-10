@@ -31,30 +31,34 @@ getButton.addEventListener("click", async (event, err) => {
 
 setButton.addEventListener("click", async (event, err) => {
     event.preventDefault();
+    setButton.disabled = true;
     const host = document.getElementById("host").value;
     const accountAddress = document.getElementById("account-address").value;
     const value = document.getElementById("value-to-set").value;
     const deployedContractAddress = document.getElementById("deployed-contract-address").value;
     const blockWritten = document.getElementById("block-written");
     let success = false;
+    blockWritten.classList.remove("text-danger");
     blockWritten.innerText = "Running";
-    
+
     setTimeout(async () => {
         if (!success) {
             blockWritten.innerText = "Time Out";
             blockWritten.classList.add("text-danger");
         }
+        setButton.disabled = false;
     }, timeLimit);
-    
+
     try {
         const blockInfo = await setValueAtAddress(host, accountAddress, value, deployedContractAbi, deployedContractAddress);
-        blockWritten.classList.remove("text-danger");            
         blockWritten.innerText = blockInfo.blockNumber;
         success = true;
+        setButton.disabled = false;
     }
     catch (e) {
         console.log(e);
     }
+
 })
 
 async function updateBlockCount() {
